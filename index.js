@@ -114,5 +114,31 @@ app.post("/mensaje3NoRepudio", async (req, res) => {
 
 });
 
+app.get("/SKeyType4", async (req, res) => {
+
+    const body = {
+      type: '4',
+      src: 'A',
+      ttp: "TTP",
+      dst: 'B',
+      msg: Key
+    }
+
+    const digest = await digestHash(body);
+
+    const pkp = bigconv.bigintToHex(prKey.sign(bigconv.textToBigint(digest)));
+
+    res.status(200).send({
+      body, pkp
+    });
+
+
+  async function digestHash(body){
+    const d = await sha.digest(body, 'SHA-256');
+    return d;
+  }
+
+
+});
 
 
