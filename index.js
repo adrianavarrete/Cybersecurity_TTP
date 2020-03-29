@@ -11,6 +11,7 @@ const ___dirname = path.resolve();
 
 global.puKey;
 global.prKey;
+global.Key;
 
 async function claves() {
   const { publicKey, privateKey } = await rsa.generateRandomKeys(3072);
@@ -67,6 +68,9 @@ app.post("/mensaje3NoRepudio", async (req, res) => {
   clientePublicKey = new rsa.PublicKey(bigconv.hexToBigint(req.body.mensaje.e), bigconv.hexToBigint(req.body.mensaje.n));
   console.log(clientePublicKey);
   if ( await verifyHash(clientePublicKey) == true) {
+
+    Key = req.body.mensaje.body.msg;
+    console.log(Key);
 
     const body = {
       type: '4',
