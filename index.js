@@ -11,7 +11,8 @@ const ___dirname = path.resolve();
 
 global.puKey;
 global.prKey;
-global.Key;
+global.Key = null;
+global.iv = null;
 
 async function claves() {
   const { publicKey, privateKey } = await rsa.generateRandomKeys(3072);
@@ -67,17 +68,24 @@ app.post("/mensaje3NoRepudio", async (req, res) => {
 
   clientePublicKey = new rsa.PublicKey(bigconv.hexToBigint(req.body.mensaje.e), bigconv.hexToBigint(req.body.mensaje.n));
   console.log(clientePublicKey);
+  
+  Key = req.body.mensaje.body.msg;
+  iv = req.body.mensaje.body.iv;
+
+  
   if ( await verifyHash(clientePublicKey) == true) {
 
-    Key = req.body.mensaje.body.msg;
+    
     console.log(Key);
+    console.log(iv);
 
     const body = {
       type: '4',
       src: 'A',
       ttp: "TTP",
       dst: 'B',
-      msg: req.body.mensaje.body.msg
+      msg: req.body.mensaje.body.msg,
+      iv: req.body.mensaje.body.iv
     }
 
     const digest = await digestHash(body);
@@ -100,8 +108,6 @@ app.post("/mensaje3NoRepudio", async (req, res) => {
   async function verifyHash(clientePublicKey) {
     const hashBody = await sha.digest(req.body.mensaje.body, 'SHA-256')
 
-    console.log(hashBody);
-    console.log(bigconv.bigintToText(clientePublicKey.verify(bigconv.hexToBigint(req.body.mensaje.pko))))
     var verify = false;
 
     if (hashBody == bigconv.bigintToText(clientePublicKey.verify(bigconv.hexToBigint(req.body.mensaje.pko)))) {
@@ -121,16 +127,22 @@ app.get("/SKeyType4", async (req, res) => {
       src: 'A',
       ttp: "TTP",
       dst: 'B',
-      msg: Key
+      msg: Key,
+      iv: iv
     }
 
     const digest = await digestHash(body);
 
     const pkp = bigconv.bigintToHex(prKey.sign(bigconv.textToBigint(digest)));
 
+    console.log(Key);
+
     res.status(200).send({
       body, pkp
     });
+
+    Key = null;
+    iv = null;
 
 
   async function digestHash(body){
