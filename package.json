@@ -17,6 +17,6 @@
     "nodemon": "^2.0.2",
     "object-sha": "^1.0.3",
     "path": "^0.12.7",
-    "rsa": "file:../rsa-cybersecurity"
+    "rsa-scii-upc": "^1.0.1"
   }
 }

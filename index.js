@@ -3,7 +3,7 @@ const app = express();
 const morgan = require('morgan');
 const cors = require('cors');
 const path = require('path');
-const rsa = require('rsa');
+const rsa = require('rsa-scii-upc');
 const bigconv = require('bigint-conversion');
 const sha = require('object-sha');
 
